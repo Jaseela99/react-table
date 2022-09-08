@@ -1,16 +1,16 @@
 import React ,{useMemo} from 'react'
-import { useTable } from 'react-table'
+import { useTable,useSortBy  } from 'react-table'
 import MOCK_DATA from "./MOCK_DATA.json"
 import { Columns,GROUPED_COLUMNS } from './Columns'
 import "./Styles.css"
-const BasicTable = () => {
+const SortingTable = () => {
     //useMemo is used so that data is not recreated on every render
     /* const columns=useMemo(()=>Columns,[]) */
     const columns=useMemo(()=>GROUPED_COLUMNS,[])
     const data=useMemo(()=>MOCK_DATA,[])
     //arrays and functions for accessing to connect data with table elements
-    const {getTableProps,getTableBodyProps,footerGroups,headerGroups,rows,prepareRow} =  useTable({columns,data})
-    console.log(headerGroups)
+    const tableInstance= useTable({columns,data},useSortBy)
+    const {getTableProps,getTableBodyProps,footerGroups,headerGroups,rows,prepareRow} =tableInstance 
     return (
     <table {...getTableProps()}>
         <thead>
@@ -20,9 +20,12 @@ const BasicTable = () => {
                {/*  we access headers in each group */}
                 {headerGroup.headers.map((column)=>(
                     //then we access each column 
-                    <th {...column.getHeaderProps()}>
+                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                     {/* render "Header" property defined in the columns used in the used table */}
                     {column.render('Header')}
+                    <span>
+                    {column.isSorted?(column.isSortedDesc? " ▼" : " ▲") : ""}
+                    </span>
                 </th>
                 ))}
             </tr>
@@ -63,4 +66,4 @@ const BasicTable = () => {
   )
 }
 
-export default BasicTable
+export default SortingTable
